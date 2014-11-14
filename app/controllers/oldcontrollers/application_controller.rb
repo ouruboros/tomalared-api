@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
   #protect_from_forgery  
   helper :all
   helper_method :current_user_session, :current_user
-  after_filter :set_access_control_headers
+  #after_filter :set_access_control_headers
   
   def set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'

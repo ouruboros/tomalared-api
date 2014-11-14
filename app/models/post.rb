@@ -1,17 +1,17 @@
 class Post < ActiveRecord::Base
 
-  include Tenacity
+  # include Tenacity
   
-  has_many :interactions, :dependent => :destroy
-  has_many :users, :through => :interactions
-  has_many :comments, :order => "created_at", :dependent => :destroy
-  t_has_many :notifications, :dependent => :destroy
+  # has_many :interactions, :dependent => :destroy
+  has_many :users # , :through => :interactions
+  # has_many :comments, -> { order 'position desc' }, :dependent => :destroy
+  # t_has_many :notifications, :dependent => :destroy
   has_and_belongs_to_many :tags
   belongs_to :user
-  has_many :likes, :foreign_key => 'type_id', :conditions => ['like_type = 1'], :dependent => :destroy
-  has_many :shares, :dependent => :destroy
+#  has_many :likes, :foreign_key => 'type_id', -> { where like_type: 1}, :dependent => :destroy
+  # has_many :shares, :dependent => :destroy
   
-  attr_accessible :id, :title, :post_type, :content, :user_id, :tags, :notifications, :interactions
+#  attr_accessible :id, :title, :post_type, :content, :user_id, :tags, :notifications, :interactions
 
   # call yamlize_content after we load each record, to translate its content
   # from yaml to a hash (if necessary)

@@ -1,7 +1,34 @@
 class TagController < ApplicationController
+
   helper :post
-  
-  def follow
+  # the big man
+  def is_admin_user?
+    (logged_in? && current_user[:id] == User::ADMIN_USER_ID)
+  end
+
+  #
+  # tag management
+  #
+
+  # ajaxly rename the tag
+  def rename_tag
+    if request.post?
+      tag = Tag.find(params[:tag_id])
+      tag.name = params[:tag_name]
+      tag.save
+      render :text => tag.name
+    end
+  end
+
+  # up and delete a tag
+  def delete_tag
+    tag = Tag.find(params[:id])
+    tag.destroy
+    flash[:notice] = 'Tag deleted.'
+    redirect_to :action => :list, :id => 'tag'
+  end
+
+  def follow_tag
     @tag = Tag.find(params[:id])
     Subscriptions.subscribe(current_user[:id], Subscriptions::S_TAG, @tag.id)
     @tag.users << User.find(current_user[:id])
@@ -22,7 +49,7 @@ class TagController < ApplicationController
     end
   end
 
-  def unfollow
+  def unfollow_tag
     @tag = Tag.find(params[:id])
     current_user.tags.delete(@tag)
     #foto aleatoria de la cabezera de list por tags
@@ -56,12 +83,5 @@ class TagController < ApplicationController
       render json: list
     end
   end
-
-  def delete
-    tag = Tag.find(params[:id])
-    tag.destroy
-    flash[:notice] = 'Tag deleted.'
-    redirect_to :action => :list, :id => 'tag'
-  end
-
 end
+

@@ -65,8 +65,10 @@ Rails.application.routes.draw do
   #       #Login
   match '/login'      => "user_sessions#create", :as => :login, via: [:get, :post]
   match '/logout'     => 'user_sessions#destroy', via: [:get, :post]
-  match '/signup'     => 'users#create', :as => :signup, via: [:get, :post]
+  match '/signup'     => 'user#create', :as => :signup, via: [:get, :post]
 
+  match '/users'      => 'user#list', via: [:get]
+  match '/u/:name'    => 'user#show', via: [:get, :post]
   # #Usuario
   # match '/home'         => 'users#edit', via: [:get, :post]
   # match '/edit_me'    => 'users#edit', via: [:get, :post]
@@ -89,6 +91,9 @@ Rails.application.routes.draw do
   # match '/post/:pagina'     => 'post#list', via: [:get, :post]
   # match '/network/note/:note_type'   => 'post#note', via: [:get, :post]
 
+  match '/p/:id'      => 'post#list', via: [:post, :get]
+  match '/pub'        => 'post#save', via: [:get, :post]
+  match '/:user'      => 'post#list_by_user', via: [:get, :post]
   # #Funciones
   # match '/save'  => 'post#save', via: [:get, :post]
   # match '/delete'     => 'post#delete', via: [:get, :post]
@@ -104,8 +109,8 @@ Rails.application.routes.draw do
   #       #Likes
   # match '/vote' => 'vote#vote', via: [:get, :post]
 
-  match 'activate(/:activation_code)' => 'users#activate', :as => :activate_account, via: [:get, :post]
-  match 'send_activation(/:user_id)' => 'users#send_activation', :as => :send_activation, via: [:get, :post]
+  match 'activate(/:activation_code)' => 'user#activate', :as => :activate_account, via: [:get, :post]
+  match 'send_activation(/:user_id)' => 'user#send_activation', :as => :send_activation, via: [:get, :post]
 
   #       #Share
   # match '/share/:post_id' => 'share#share', via: [:get, :post]
@@ -122,7 +127,6 @@ Rails.application.routes.draw do
   #       #Buscador
   match '/search' => 'search#search', via: [:get, :post]
   match '/search/index' => 'search#searched', via: [:get, :post]
-  
 
   #       #Futuras ampliaciones
   # match 'chat'       => 'chat#index', via: [:get, :post]
@@ -135,12 +139,14 @@ Rails.application.routes.draw do
   # match '/users/crop/' => 'users#crop', via: [:get, :post]
   
   # match '/desde' => 'application#calcular_fecha', via: [:get, :post]
-  
+
+  match '/version' => 'version#number', via: [:get]
+
   #resources
   resources :tags
   resources :comments
   resources :likes
-  resources :users                  # give us our some normal resource routes for users
+  resources :user                  # give us our some normal resource routes for users
   resource :user, :as => 'account'
   resources :user_sessions
   resource :password_resets, :only => [ :new, :create, :edit, :update ]
