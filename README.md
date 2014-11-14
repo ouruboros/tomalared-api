@@ -12,12 +12,12 @@ We have now a backend speaking JSON, with an AngularJS client https://github.com
   
 * Configuration
 
-    $ bundle install
-    $ nano tomalared-api/config/database.yml
+    `$ bundle install`
+    `$ nano tomalared-api/config/database.yml`
   
 * Database creation and initialization
 
-    rake db:migrate db:create
+    `rake db:migrate db:create`
   
 * How to run the test suite
 
