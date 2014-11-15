@@ -11,7 +11,7 @@ default: &default
   database: tomalared-api
   pool: 5
   username: root
-  password: 
+  password: ap0te0sic0
 
 development:
   <<: *default

@@ -4,6 +4,86 @@ class PostController < ApplicationController
   helper :all
 #  protect_from_forgery
 
+  def save
+    @post = Post.new
+    @post.content = params[:content]
+    @post.post_type = type_parse(@post.content)
+
+    # POST_TYPE == IMAGE
+    if @post.post_type == 'image'
+      capturanombre = "#{@post.user_id}-#{Time.now}"
+      capturanombre = capturanombre.gsub(" ","")
+      direcion = "public/#{capturanombre}.jpg"
+      if params[:img] == nil
+        require 'open-uri'
+        urls = Array.new
+        @post.content.split.each do |u|
+          if u.match(/(.png|.jpg|.gif)$/)
+            urls << u
+          end
+        end
+        open(direcion, "wb") do |file|
+          file << open(urls.first).read
+        end
+      else
+        File.open(direcion, "wb") do |file|
+          file << open(params[:img]).read
+        end
+      end
+      direcion2 = "/post/#{capturanombre}.jpg"
+      @post.content = direcion2
+    end
+    
+    # POST_TYPE == LINK || VIDEO
+    if @post.post_type == 'link' || @post.post_type == 'video'
+      # require 'metainspector'
+      # require 'iconv'
+      if @post.post_type == 'link'
+        urls = Array.new
+        @post.content.split.each do |u|
+          if u.match(/(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?$)/ix)
+            urls << u
+          end
+        end
+        doc = MetaInspector.new(urls.first)
+      end
+      if @post.post_type == 'video'
+        urls = Array.new
+        @post.content.split.each do |u|
+          if u.match(/\A(http|https):\/\/www.youtube.com/)
+            urls << u
+          end
+        end
+        doc = MetaInspector.new(urls.first)
+      end
+      desc = doc.description
+      @post.title = doc.title
+      if doc.image
+        img_path = doc.image
+      else
+        img_path = doc.images.first
+      end
+      
+      if img_path != ""
+        require 'open-uri'
+        capturanombre = "#{@post.user_id}-#{Time.now.to_a.join}"
+        direcion = "public/#{capturanombre}.jpg"
+        open(direcion, "wb") do |file|
+          file << open(img_path).read
+        end
+        img_url = "/post/#{capturanombre}.jpg"
+        @post.content = desc + "\n" + img_url + "\n" + doc.url + "\n" + doc.host
+      else
+        @post.content = desc + "\n" + "no-img" + "\n" + doc.url + "\n" + doc.host
+      end
+    end
+    if @post.save
+      render :json => @post
+    else
+      render :json => {:message => 'Caca de la vaca!'}
+    end
+  end
+  
   def show
     begin
       if params[:id]
@@ -30,7 +110,7 @@ class PostController < ApplicationController
   end
 
   # this method handles creation of new posts and editing of existing posts
-  def save
+  def save2
 #     if params[:id] && request.get?
 #       # Aqui se genera los datos para la view del edit
 #       @post = Post.find(params[:id])

@@ -1,14 +1,13 @@
 class UserController < ApplicationController
   
   before_filter :require_no_user, :only => [:new, :create]
-  before_filter :require_user, :only => [:edit, :update] #:show
+  before_filter :require_user, :only => [:edit, :update] 
 
   def new
     @user = User.new
   end
 
   def create
-#   @user_session = UserSession.new    
     @user = User.new({
                        :name => params[:name],
                        :profile => params[:profile],
@@ -17,38 +16,28 @@ class UserController < ApplicationController
                        :password_confirmation => params[:password_confirmation]
                      })
 
-    if params[:accept]      
+    if params[:accept] == 'true'
       # Saving without session maintenance to skip
       # auto-login which can't happen here because
       # the User has not yet been activated
-      if @user.save_without_session_maintenance 
+      if @user.save #_without_session_maintenance 
         # @usernew.send_activation_instructions! 
-        render :json => {:message => "Cuenta creada!!"}, :status => :ok
+        render :json => {:success => true, :message => "Cuenta creada!!"}, :status => :ok
       else
-        render :json => {:message => "Hubo un problema creando tu usuario."} , :status => :ok
+        render :json => {:success => false, :message => "Hubo un problema creando tu usuario."} , :status => :ok
       end
     else
-      render :json => {:message => "Debe aceptar las condiciones."} , :status => :ok
+      render :json => {:success => false, :message => "Debe aceptar las condiciones."} , :status => :ok
     end
   end
 
-
-  # up and delete a user
-  def delete_user
+  def delete
     if params[:email] == current_user[:email]  
       user = User.find(current_user[:id])      
       user.destroy
       render :json => {:success => true, :message => "usuario borrado."}, :status => :ok 
     else
-      render :json => {:message => "Tienes que introducir tu email para verificar que quieres borrar la cuenta."}
-    end
-  end
-
-  def crop
-    @po = Post.new
-    @user = User.find(current_user[:id])
-    respond_to do |format|
-      format.json
+      render :json => {:success => false, :message => "Tienes que introducir tu email para verificar que quieres borrar la cuenta."}
     end
   end
 
@@ -62,16 +51,16 @@ class UserController < ApplicationController
     end
   end
 
-  def updateImage
-    @po = Post.new    
-    @user = current_user
-    @user.photo = params[:user][:photo]
-    @user.save
-    flash[:notice] = "Tu cuenta ha sido actualizada!"
-    respond_to do |format|
-      format.js
-    end
-  end
+  # def updateImage
+  #   @po = Post.new    
+  #   @user = current_user
+  #   @user.photo = params[:user][:photo]
+  #   @user.save
+  #   flash[:notice] = "Tu cuenta ha sido actualizada!"
+  #   respond_to do |format|
+  #     format.js
+  #   end
+  # end
 
   def update
     @po = Post.new    

@@ -14,7 +14,7 @@ class UserSessionsController < ApplicationController
     activate_authlogic       
     user_session = UserSession.new({:name => params[:name], :password => params[:password], :remember_me => '1'})
     if user_session.save
-      render :json => {'user_session' => user_session.role }, :status => :ok
+      render :json => {'user_session' => user_session}, :status => :ok
     else
       render :json => {'errors' => user_session.errors}, :status => :ok
     end
