@@ -289,10 +289,15 @@ class PostController < ApplicationController
   end
   
   def list_by_user
-    @user = User.where(:name => params[:user])
-    @posts = Post.where(:user_id => @user.id)
-    render :json => @posts
+#    @user = User.where(:name => params[:user])
+    @posts = Post.where(:user_id => params[:id])
+    if @posts
+      render :json => @posts
+    else
+      render :json => {:success => false}
+    end
   end 
+
   # def list(options = Hash.new) 
       # if current_user   
       # @po = Post.new

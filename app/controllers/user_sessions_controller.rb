@@ -12,9 +12,17 @@ class UserSessionsController < ApplicationController
  
   def create
     activate_authlogic       
-    user_session = UserSession.new({:name => params[:name], :password => params[:password], :remember_me => '1'})
+    user_session = UserSession.new({:name => params[:name], :password => params[:password]})
+    # @user = User.where(:name => user_session.name)
     if user_session.save
-      render :json => {'user_session' => user_session}, :status => :ok
+      json = {
+        id: user_session.attempted_record.id,
+        name: user_session.name,
+        profile: user_session.attempted_record.profile,
+        token: user_session.attempted_record.persistence_token
+      }
+
+      render :json => json, :status => :ok
     else
       render :json => {'errors' => user_session.errors}, :status => :ok
     end

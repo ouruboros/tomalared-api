@@ -44,7 +44,7 @@ class UserController < ApplicationController
   def edit
     @po = Post.new
     @user = User.find(current_user[:id])
-    if params[:remote]
+    if params[:token] == @user
       respond_to do |format|
         format.json
       end

@@ -1,10 +1,10 @@
 class Post < ActiveRecord::Base
 
   include Tenacity
-  include Mongoid::Document
+#  include Mongoid::Document
 
-  field :title
-  field :content
+  # field :title
+  # field :content
   # has_many :interactions, :dependent => :destroy
   has_many :users # , :through => :interactions
   # has_many :comments, -> { order 'position desc' }, :dependent => :destroy
