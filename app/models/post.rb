@@ -1,6 +1,6 @@
 class Post < ActiveRecord::Base
 
-  include Tenacity
+#  include Tenacity
 #  include Mongoid::Document
 
   # field :title

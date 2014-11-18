@@ -9,7 +9,8 @@ Rails.application.routes.draw do
 
   match '/p/:id'      => 'post#list', via: [:post, :get]
   match '/pub'        => 'post#save', via: [:get, :post]
-  match '/posts/:id'      => 'post#list_by_user', via: [:get, :post]
+  match '/posts/:name'      => 'post#list_by_user', via: [:get, :post]
+  match '/postsTag/:name'      => 'post#list_by_tag', via: [:get, :post]
 
   match 'activate(/:activation_code)' => 'user#activate', :as => :activate_account, via: [:get, :post]
   match 'send_activation(/:user_id)' => 'user#send_activation', :as => :send_activation, via: [:get, :post]
@@ -28,3 +29,4 @@ Rails.application.routes.draw do
   resources :photos, :member => {:crop => :get}
 
 end
+

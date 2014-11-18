@@ -4,7 +4,68 @@ class PostController < ApplicationController
   helper :all
 #  protect_from_forgery
 
+
   def save
+    @post = Post.new
+      @post.content = params[:content]
+      @post.post_type = type_parse(@post.content)
+      
+      require 'htmlentities'
+      coder = HTMLEntities.new
+      string = @post.content
+      @post.content = coder.encode(string, :basic)
+      
+      content = @post.content
+
+      @post.user_id = params[:user_id]
+      @post.save   
+            #render :json => {:message => 'Your post has been saved!!'}
+      if @post
+        # Agregar tags
+        t11 = Array.new
+        content.split.each do |t|
+          if t.first == '#'
+            t = t.gsub(/^#/,"")
+            t = t.gsub(/[áäà]/i, "a")
+            t = t.gsub(/[éëè]/i, "e")
+            t = t.gsub(/[íïì]/i, "i")
+            t = t.gsub(/[óöò]/i, "o")
+            t = t.gsub(/[úüù]/i, "u")
+            t = t.gsub(/[^a-zA-Z0-9ñÑçÇ\']/i, "")
+            t11 << t
+          end
+        end
+
+        t11.each do |t|
+        tag = Tag.find_by_name(t) || Tag.new(:name => t)
+        @post.tags << tag
+        end
+        
+        @post.save 
+      end
+  end
+
+def list_by_user
+    @user = User.find_by_name(params[:name])
+    @posts = Post.where(:user_id => @user.id)    
+    if @posts
+      render :json => @posts
+    else
+      render :json => {:success => false}
+    end
+  end 
+
+  def list_by_tag    
+    @tag = Tag.find_by_name(params[:name])    
+    
+    if @tag.posts
+      render :json => @tag.posts    
+    else
+      render :json => {:success => false}
+    end
+  end
+
+  def save3
     @post = Post.new
     @post.content = params[:content]
     @post.post_type = type_parse(@post.content)
@@ -77,6 +138,7 @@ class PostController < ApplicationController
         @post.content = desc + "\n" + "no-img" + "\n" + doc.url + "\n" + doc.host
       end
     end
+    @post.user_id = params[:user_id]
     if @post.save
       render :json => @post
     else
@@ -222,7 +284,7 @@ class PostController < ApplicationController
           @post.content = desc + "\n" + "no-img" + "\n" + doc.url + "\n" + doc.host
         end
       end
-      
+      @post.user_id = params[:user_id]
       @post.save   
             #render :json => {:message => 'Your post has been saved!!'}
       if @post
@@ -271,6 +333,7 @@ class PostController < ApplicationController
         # Subscriptions.subscribe(current_user[:id], Subscriptions::S_POST, @post.id)
 
         # save the post - if it fails, send the user back from whence she came
+        @post.user_id = params[:user_id]
         @post.save
       end
 
@@ -288,16 +351,6 @@ class PostController < ApplicationController
     render :json => Post.where(:id => params[:id])
   end
   
-  def list_by_user
-#    @user = User.where(:name => params[:user])
-    @posts = Post.where(:user_id => params[:id])
-    if @posts
-      render :json => @posts
-    else
-      render :json => {:success => false}
-    end
-  end 
-
   # def list(options = Hash.new) 
       # if current_user   
       # @po = Post.new
