@@ -19,6 +19,7 @@ class UserSessionsController < ApplicationController
         id: user_session.attempted_record.id,
         name: user_session.name,
         profile: user_session.attempted_record.profile,
+        email: user_session.email,
         token: user_session.attempted_record.persistence_token
       }
 
