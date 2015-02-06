@@ -8,7 +8,7 @@ class PostController < ApplicationController
   def save
     @post = Post.new
       @post.content = params[:content]
-      @post.post_type = type_parse(@post.content)
+#      @post.post_type = type_parse(@post.content)
       
       require 'htmlentities'
       coder = HTMLEntities.new
@@ -39,15 +39,15 @@ class PostController < ApplicationController
         t11.each do |t|
         tag = Tag.find_by_name(t) || Tag.new(:name => t)
         @post.tags << tag
-        end
-        
+      end
+        @post.user_name = User.where(:id => @post.user_id).first.name
         @post.save 
       end
   end
 
-def list_by_user
+  def list_by_user
     @user = User.find_by_name(params[:name])
-    @posts = Post.where(:user_id => @user.id)    
+    @posts = Post.where(:user_id => @user.id)
     if @posts
       render :json => @posts
     else
@@ -348,7 +348,12 @@ def list_by_user
   end
 
   def list
-    render :json => Post.where(:id => params[:id])
+    @post = Post.where(:id => params[:id]).first
+    if @post
+      render :json => {:post => @post, :comments =>  @post.comments}
+    else
+      render :json => {:message => 'The post does not exist'}
+    end
   end
   
   # def list(options = Hash.new) 
@@ -529,16 +534,12 @@ def list_by_user
     @post = Post.find(params[:id])
     if @post           
       if @post.destroy        
-        #flash[:notice] = 'El mensaje se ha borrado correctamente.'
+        render :json => {:message => 'Your post has been deleted'}
       else
-        #flash[:notice] = "Ha habido un problema al borrar el mensaje."
+        render :json => {:message => 'There was a problem deting your post'}
       end
     else
-      #flash[:notice] = "No se encuentra el mensaje."
-    end
-    respond_to do |format|
-      format.html { redirect_to post_path }
-      format.js
+      render :json => {:message => 'Post not found'}
     end
   end
 

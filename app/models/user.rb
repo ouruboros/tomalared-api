@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   # has_many :interactions, :dependent => :destroy
   has_many :posts #, :through => :interactions
   has_and_belongs_to_many :tags
-  # has_many :comments, -> { order 'position desc' }, :through => :posts, :dependent => :destroy
+  has_many :comments # , -> { order 'position desc' }, :through => :posts, :dependent => :destroy
   # has_many :likes, :dependent => :destroy
   # has_many :shares, :dependent => :destroy
   # t_has_many :notifications

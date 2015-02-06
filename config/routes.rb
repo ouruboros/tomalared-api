@@ -11,7 +11,15 @@ Rails.application.routes.draw do
   match '/pub'        => 'post#save', via: [:get, :post]
   match '/posts/:name'      => 'post#list_by_user', via: [:get, :post]
   match '/postsTag/:name'      => 'post#list_by_tag', via: [:get, :post]
+  match '/p/delete/:id'   => 'post#delete', via: [:post, :get]
 
+  match 'comment/new'     => 'comment#new', via: [:post, :get]
+  match 'comment/list/:id'  => 'comment#list', via: [:post, :get]
+
+  match 't/follow/:id'    => 'tag#follow', via: [:get, :post]
+  match 't/unfollow/:id'  => 'tag#unfollow', via: [:get, :post]
+  match 't/list'          => 'tag#list', via: [:get, :post]
+  
   match 'activate(/:activation_code)' => 'user#activate', :as => :activate_account, via: [:get, :post]
   match 'send_activation(/:user_id)' => 'user#send_activation', :as => :send_activation, via: [:get, :post]
 
