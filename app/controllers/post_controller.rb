@@ -45,21 +45,21 @@ class PostController < ApplicationController
       end
   end
 
-  def list_by_user
-    @user = User.find_by_name(params[:name])
-    @posts = Post.where(:user_id => @user.id)
-    if @posts
-      render :json => @posts
-    else
-      render :json => {:success => false}
-    end
-  end 
+	def list_by_user
+		@user = User.find_by_name(params[:name])
+		@posts = Post.where(:user_id => @user.id)
+		if @posts
+			render :json => @posts.to_json(:include => [:comments, :user])
+		else
+			render :json => {:success => false}
+		end
+	end
 
   def list_by_tag    
     @tag = Tag.find_by_name(params[:name])    
     
     if @tag.posts
-      render :json => @tag.posts    
+      render :json => @tag.posts.to_json(:include => [:comments, :user])
     else
       render :json => {:success => false}
     end
@@ -350,7 +350,7 @@ class PostController < ApplicationController
   def list
     @post = Post.where(:id => params[:id]).first
     if @post
-      render :json => {:post => @post, :comments =>  @post.comments}
+      render :json => @post.to_json(:include => [:comments, :user])
     else
       render :json => {:message => 'The post does not exist'}
     end

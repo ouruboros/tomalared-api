@@ -14,7 +14,7 @@ class Post < ActiveRecord::Base
 #  has_many :likes, :foreign_key => 'type_id', -> { where like_type: 1}, :dependent => :destroy
   # has_many :shares, :dependent => :destroy
   
-##  attr_accessible :id, :title, :post_type, :content, :user_id, :tags, :notifications, :interactions
+#  attr_accessible :id, :title, :post_type, :content, :user_id, :tags, :notifications, :interactions
 
   def self.search(query)
     if query
