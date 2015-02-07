@@ -49,7 +49,7 @@ class PostController < ApplicationController
 		@user = User.find_by_name(params[:name])
 		@posts = Post.where(:user_id => @user.id)
 		if @posts
-			render :json => @posts.to_json(:include => {:comments => { :include => {:user => {:only => [:id,:profile]}}}, :user => {:only => [:id,:profile]}})
+			render :json => @posts.to_json(:include => {:comments => { :include => {:user => {:only => [:id,:profile]}}}, :user => {:only => [:id,:profile]}, :tags => {:only => [:id,:name]}})
 		else
 			render :json => {:success => false}
 		end
@@ -59,7 +59,7 @@ class PostController < ApplicationController
     @tag = Tag.find_by_name(params[:name])    
     
     if @tag.posts
-      render :json => @tag.posts.to_json(:include => {:comments => { :include => {:user => {:only => [:id,:profile]}}}, :user => {:only => [:id,:profile]}})
+      render :json => @tag.posts.to_json(:include => {:comments => { :include => {:user => {:only => [:id,:profile]}}}, :user => {:only => [:id,:profile]}, :tags => {:only => [:id,:name]}})
     else
       render :json => {:success => false}
     end
